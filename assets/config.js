@@ -11,10 +11,10 @@ window.GNG_CONFIG = {
   SHARED_SECRET: "",
 
   // Default owner shown on new leads. The CRM also exposes an owner dropdown.
-  DEFAULT_OWNER: "Zuzanna",
+  DEFAULT_OWNER: "anrunyap@gmail.com",
 
-  // Known owners for the dropdown.
-  OWNERS: ["Zuzanna", "Anrunya", "Kent", "Vivek"],
+  // Known owners for the dropdown. DEFAULT_OWNER must be in this list to be preselected.
+  OWNERS: ["anrunyap@gmail.com", "Zuzanna", "Anrunya", "Kent", "Vivek"],
 
   // Pipeline stages, in display order. If you change these, change Code.gs too isn't required
   // — the backend just stores whatever string the frontend sends.
