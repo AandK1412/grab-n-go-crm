@@ -55,7 +55,6 @@
     }
     try {
       await refresh();
-      $('#connStatus').textContent = 'connected · ' + S.leads.length + ' leads';
       if (cfg.REFRESH_MS > 0) setInterval(refresh, cfg.REFRESH_MS);
     } catch (e) {
       S.loading = false; S.err = e.message;
@@ -69,6 +68,7 @@
     S.leads = j.leads || [];
     S.logs = (j.logs || []).sort((a,b)=> (b.Timestamp||'').localeCompare(a.Timestamp||''));
     S.loading = false; S.err = '';
+    $('#connStatus').textContent = 'connected · ' + S.leads.length + ' leads';
     render();
   }
 
@@ -641,7 +641,7 @@
 
   async function runImport(d) {
     try {
-      const r = await API.importBatch(d.leads, d.mode, cfg.DEFAULT_OWNER);
+      const r = (await API.importBatch(d.leads, d.mode, cfg.DEFAULT_OWNER)).result;
       d.step = 3;
       d.result = `${r.added} added, ${r.merged} merged, ${r.skipped} skipped — of ${r.total} rows.`;
       renderDrawer();
