@@ -131,7 +131,8 @@
       Seniority:        _pick(row, 'Seniority'),
       Departments:      _pick(row, 'Departments'),
       Tags:             _pick(row, 'Keywords'),
-      Owner:            _pick(row, 'Contact Owner') || defaults.owner || '',
+      // The owner picked in the import dialog wins; Apollo's Contact Owner is the exporter's account, not the rep.
+      Owner:            defaults.owner || _pick(row, 'Contact Owner') || '',
       Status:           _normalizeStage(_pick(row, 'Stage'), defaults.stage || 'New'),
       Notes:            ''
     };
