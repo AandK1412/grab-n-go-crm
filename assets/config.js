@@ -17,7 +17,7 @@ window.GNG_CONFIG = {
   DEFAULT_OWNER: "anrunyap@gmail.com",
 
   // Known owners for the dropdown. DEFAULT_OWNER must be in this list to be preselected.
-  OWNERS: ["anrunyap@gmail.com", "Zuzanna", "Anrunya", "Kent", "Vivek"],
+  OWNERS: ["anrunyap@gmail.com", "Zuzanna", "Anrunya", "Kent", "Kshama"],
 
   // Pipeline stages, in display order. If you change these, change Code.gs too isn't required
   // — the backend just stores whatever string the frontend sends.
