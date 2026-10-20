@@ -12,7 +12,7 @@
     tab: 'dashboard',
     leads: [], logs: [],
     loading: true, err: '',
-    q: '', fStage: '', fIndustry: '', fOwner: '',
+    q: '', pq: '', fStage: '', fIndustry: '', fOwner: '',
     sortCol: 'Updated_At', sortDir: 'desc',
     drawer: null,
     chartRefs: {}
@@ -25,6 +25,10 @@
   const fmtTime = iso => { if (!iso) return ''; const d = new Date(iso); return d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}); };
   const fmtDate = iso => { if (!iso) return ''; const d = new Date(iso); return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}); };
   const fullName = l => [l.First_Name, l.Last_Name].filter(Boolean).join(' ').trim() || '(no name)';
+  const phoneOf = l => String(l.Phone || l.Mobile_Phone || l.Work_Phone || '');
+  // Shared free-text match for the Leads table and Pipeline cards.
+  const matchesQuery = (l, q) => !q || [fullName(l), l.Company, l.Title, l.Industry, l.Email, l.Tags, l.City, l.State,
+    l.Phone, l.Mobile_Phone, l.Work_Phone, l.Owner].join(' ').toLowerCase().includes(q.toLowerCase());
 
   function toast(msg, kind) {
     const el = document.createElement('div');
@@ -156,11 +160,17 @@
 
   views.pipeline = () => {
     const stages = cfg.STAGES;
+    const shown = S.leads.filter(l => matchesQuery(l, S.pq)).length;
     return `
+      <div class="flex flex-wrap items-center gap-3 mb-3">
+        <input id="pq" type="search" value="${esc(S.pq)}" placeholder="Search cards: name, company, title, email, phone…"
+          class="flex-1 min-w-60 border border-brand-line rounded-md px-3 py-2 bg-white" aria-label="Search pipeline cards">
+        ${S.pq ? `<span class="text-sm text-brand-muted">${shown} of ${S.leads.length} cards</span>` : ''}
+      </div>
       <div class="mb-3 text-sm text-brand-muted">Drag cards between columns to update status. Changes save to Google Sheets.</div>
       <div class="grid gap-3" style="grid-template-columns: repeat(${stages.length}, minmax(220px, 1fr)); overflow-x:auto">
         ${stages.map(s => {
-          const items = S.leads.filter(l => l.Status === s);
+          const items = S.leads.filter(l => l.Status === s && matchesQuery(l, S.pq));
           return `<div class="bg-brand-bg border border-brand-line rounded-lg p-2 kanban-col" data-stage="${esc(s)}">
             <div class="flex justify-between items-center px-1 py-1">
               <span class="stage-pill" data-stage="${esc(s)}">${esc(s)}</span>
@@ -187,16 +197,11 @@
   views.leads = () => {
     const industries = [...new Set(S.leads.map(l => l.Industry).filter(Boolean))].sort();
     const owners = [...new Set(S.leads.map(l => l.Owner).filter(Boolean))].sort();
-    const q = S.q.toLowerCase();
     let list = S.leads.filter(l => {
       if (S.fStage && l.Status !== S.fStage) return false;
       if (S.fIndustry && l.Industry !== S.fIndustry) return false;
       if (S.fOwner && l.Owner !== S.fOwner) return false;
-      if (q) {
-        const hay = [fullName(l), l.Company, l.Title, l.Industry, l.Email, l.Tags, l.City, l.State].join(' ').toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
+      return matchesQuery(l, S.q);
     });
     list.sort((a,b) => {
       const av = (a[S.sortCol] || '').toString().toLowerCase();
@@ -206,6 +211,7 @@
 
     const cols = [
       ['Name',       'Last_Name'],
+      ['Phone',      'Phone'],
       ['Title',      'Title'],
       ['Company',    'Company'],
       ['Industry',   'Industry'],
@@ -244,6 +250,7 @@
     return `<tr data-open="${esc(l.Lead_ID)}">
       <td><div class="font-semibold">${esc(fullName(l))}</div>
           <div class="text-xs text-brand-muted">${esc(l.Email || '')}</div></td>
+      <td class="whitespace-nowrap">${phoneOf(l) ? `<a href="tel:${esc(phoneOf(l).replace(/[^\d+]/g, ''))}" class="text-brand hover:underline" data-tel="1">${esc(phoneOf(l))}</a>` : '<span class="text-brand-muted">—</span>'}</td>
       <td>${esc(l.Title || '')}</td>
       <td>${esc(l.Company || '')}</td>
       <td>${esc(l.Industry || '')}</td>
@@ -275,6 +282,13 @@
 
   views.settings = () => {
     return `
+      <div class="bg-white border border-brand-line rounded-lg p-4 mb-4">
+        <h3 class="font-semibold mb-2">Google Sheet</h3>
+        ${cfg.SHEET_URL
+          ? `<div class="text-sm text-brand-muted mb-3">All leads and activity are stored here. You can view or edit them directly.</div>
+             <a href="${esc(cfg.SHEET_URL)}" target="_blank" rel="noopener" class="inline-block px-3 py-2 bg-brand text-white rounded-md text-sm font-semibold hover:opacity-90">Open Google Sheet ↗</a>`
+          : `<div class="text-sm text-brand-muted">Set <code>SHEET_URL</code> in <code>assets/config.js</code> to show a link to the sheet here.</div>`}
+      </div>
       <div class="bg-white border border-brand-line rounded-lg p-4 mb-4">
         <h3 class="font-semibold mb-2">Backend</h3>
         <div class="text-sm text-brand-muted mb-2">Apps Script Web App URL</div>
@@ -541,7 +555,8 @@
 
   // tabs + global clicks
   document.addEventListener('click', async e => {
-    const t = e.target.closest('[data-tab],[data-close],[data-act],[data-open],[data-editlead],[data-dellead],[data-sort],[data-addnote]');
+    if (e.target.closest('[data-tel]')) return;  // let tel: links dial without opening the row's drawer
+    const t =e.target.closest('[data-tab],[data-close],[data-act],[data-open],[data-editlead],[data-dellead],[data-sort],[data-addnote]');
     if (!t) return;
     const ds = t.dataset;
 
@@ -589,7 +604,11 @@
   // live input
   document.addEventListener('input', e => {
     const t = e.target;
-    if (t.id === 'fq') { S.q = t.value; const pos = t.selectionStart; render(); const n = document.getElementById('fq'); if (n){ n.focus(); n.setSelectionRange(pos,pos);} }
+    if (t.id === 'fq' || t.id === 'pq') {
+      S[t.id === 'fq' ? 'q' : 'pq'] = t.value;
+      const pos = t.selectionStart; render();
+      const n = document.getElementById(t.id); if (n){ n.focus(); n.setSelectionRange(pos,pos);}
+    }
   });
 
   // selects

@@ -7,6 +7,9 @@ window.GNG_CONFIG = {
   // Example: "https://script.google.com/macros/s/AKfycbxxxxxxxxxxxx/exec"
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyaN7gUN9zoLVy9_W2eKEUOm4Xq-vabfiNB3ACV8nbfZDfHkSBMfGgMNwVR1xo1Tcof/exec",
 
+  // Link to the Google Sheet that stores the data (shown on the Settings page).
+  SHEET_URL: "",
+
   // Must match SHARED_SECRET in Code.gs if you set one there. Leave "" for open writes.
   SHARED_SECRET: "",
 
