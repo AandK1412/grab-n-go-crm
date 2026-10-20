@@ -3,6 +3,9 @@
  * Keep this file in the repo so GitHub Pages serves it alongside the SPA. */
 
 window.GNG_CONFIG = {
+  // Which outreach program this copy of the CRM is for. Shown in the header and browser tab.
+  CRM_LABEL: "Local Outreach",
+
   // Paste your Apps Script /exec URL here (ends in /exec).
   // Example: "https://script.google.com/macros/s/AKfycbxxxxxxxxxxxx/exec"
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyaN7gUN9zoLVy9_W2eKEUOm4Xq-vabfiNB3ACV8nbfZDfHkSBMfGgMNwVR1xo1Tcof/exec",

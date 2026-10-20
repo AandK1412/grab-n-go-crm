@@ -49,6 +49,10 @@
   /* ============================ BOOT ============================ */
 
   async function boot() {
+    const label = cfg.CRM_LABEL || '';
+    $('#crmLabel').textContent = label;
+    $('#crmLabel').hidden = !label;
+    if (label) document.title = 'Grab-N-Go CRM · ' + label;
     render();
     if (!API.isConfigured()) {
       S.loading = false;
