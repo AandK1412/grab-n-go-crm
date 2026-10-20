@@ -69,11 +69,15 @@
 
   async function refresh() {
     const j = await API.fetchAll();
+    // Skip the re-render when nothing changed, so the 60s auto-refresh doesn't redraw charts or move the page.
+    const sig = JSON.stringify([j.leads, j.logs]);
+    const unchanged = !S.loading && !S.err && sig === S.sig;
+    S.sig = sig;
     S.leads = j.leads || [];
     S.logs = (j.logs || []).sort((a,b)=> (b.Timestamp||'').localeCompare(a.Timestamp||''));
     S.loading = false; S.err = '';
     $('#connStatus').textContent = 'connected · ' + S.leads.length + ' leads';
-    render();
+    if (!unchanged) render();
   }
 
   /* ============================ RENDER ============================ */
@@ -85,12 +89,17 @@
 
     const m = $('#main');
     if (S.loading) { m.innerHTML = banner('Loading from Google Sheets…'); return; }
+    // Hold the page height while rebuilding so the browser doesn't clamp the scroll position to the top.
+    const y = window.scrollY;
+    m.style.minHeight = m.offsetHeight + 'px';
     if (S.err) m.innerHTML = banner(S.err, 'err');
     else m.innerHTML = '';
     const view = views[S.tab] || views.dashboard;
     m.insertAdjacentHTML('beforeend', view());
     if (S.tab === 'pipeline') wireKanban();
     if (S.tab === 'dashboard') drawCharts();
+    m.style.minHeight = '';
+    window.scrollTo(0, y);
     // Background refreshes must not wipe a half-filled form or import; only the lead detail view shows live data.
     if (S.drawer && S.drawer.type === 'lead') {
       const note = document.getElementById('noteTxt');
@@ -129,11 +138,11 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div class="bg-white border border-brand-line rounded-lg p-4">
           <h3 class="font-semibold mb-3">Pipeline by stage</h3>
-          <canvas id="chart-stage" height="200"></canvas>
+          <div class="relative h-64"><canvas id="chart-stage"></canvas></div>
         </div>
         <div class="bg-white border border-brand-line rounded-lg p-4">
           <h3 class="font-semibold mb-3">Leads by industry (top 8)</h3>
-          <canvas id="chart-industry" height="200"></canvas>
+          <div class="relative h-64"><canvas id="chart-industry"></canvas></div>
         </div>
       </div>
       ${total === 0 ? emptyHint() : ''}
