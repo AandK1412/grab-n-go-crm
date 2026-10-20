@@ -5,7 +5,7 @@
 window.GNG_CONFIG = {
   // Paste your Apps Script /exec URL here (ends in /exec).
   // Example: "https://script.google.com/macros/s/AKfycbxxxxxxxxxxxx/exec"
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbz7Gxyw4vYh9ipvxKspTZ2qTaTvic3TVGH6ut63up8hQCfIZTh28Pg6GvBZO2jkBZVt/exec",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyaN7gUN9zoLVy9_W2eKEUOm4Xq-vabfiNB3ACV8nbfZDfHkSBMfGgMNwVR1xo1Tcof/exec",
 
   // Must match SHARED_SECRET in Code.gs if you set one there. Leave "" for open writes.
   SHARED_SECRET: "",
