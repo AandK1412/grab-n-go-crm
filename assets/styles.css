@@ -1,0 +1,39 @@
+/* Grab-N-Go CRM — small additions beyond Tailwind */
+.kanban-col { min-height: 200px; }
+.kanban-card { cursor: grab; }
+.kanban-card.sortable-ghost { opacity: 0.35; }
+.kanban-card.sortable-drag { cursor: grabbing; box-shadow: 0 10px 24px rgba(0,0,0,.15); }
+.stage-pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.stage-pill[data-stage="New"]              { background: #eef2f1; color: #5b6b67; }
+.stage-pill[data-stage="Contacted"]        { background: #e1ebfa; color: #2a64b8; }
+.stage-pill[data-stage="Meeting Scheduled"]{ background: #efe2fa; color: #7a3fb0; }
+.stage-pill[data-stage="Proposal Sent"]    { background: #fbe7dc; color: #c4501b; }
+.stage-pill[data-stage="Closed - Won"]     { background: #dff2e5; color: #1d7a3e; }
+.stage-pill[data-stage="Closed - Lost"]    { background: #fbe1e2; color: #b4232c; }
+
+.drawer-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; display: flex; justify-content: flex-end; }
+.drawer { background: #f5f7f6; width: min(760px, 100%); height: 100%; overflow-y: auto; }
+.drawer-h { position: sticky; top: 0; background: #ffffff; border-bottom: 1px solid #d9e1df; padding: 14px 16px; display: flex; align-items: center; gap: 10px; z-index: 2; }
+.drawer-b { padding: 16px; display: grid; gap: 14px; }
+
+input, select, textarea { font: inherit; }
+.field { display: grid; gap: 4px; }
+.field > label { font-size: 13px; font-weight: 600; }
+.field > input, .field > select, .field > textarea {
+  padding: 8px 10px; border: 1px solid #d9e1df; border-radius: 6px; background: #ffffff; width: 100%;
+}
+.field > textarea { min-height: 72px; resize: vertical; }
+
+table.data { width: 100%; border-collapse: collapse; }
+table.data th, table.data td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #d9e1df; vertical-align: top; font-size: 14px; }
+table.data th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #5b6b67; background: #eef2f1; position: sticky; top: 0; cursor: pointer; user-select: none; }
+table.data tr:hover td { background: #f5f7f6; cursor: pointer; }
+
+.toast { background: #14201d; color: #ffffff; padding: 10px 16px; border-radius: 8px; font-weight: 600; box-shadow: 0 6px 20px rgba(0,0,0,.2); animation: toastIn .18s ease-out; }
+.toast.err { background: #b4232c; }
+@keyframes toastIn { from { transform: translateY(10px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }
+
+.tab-btn { padding: 10px 14px; border: 0; background: transparent; cursor: pointer; color: #5b6b67; font-weight: 600; white-space: nowrap; border-bottom: 2px solid transparent; }
+.tab-btn[aria-current="true"] { color: #14201d; border-bottom-color: #0b6e5f; }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

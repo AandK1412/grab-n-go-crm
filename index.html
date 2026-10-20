@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Grab-N-Go CRM</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/styles.css">
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['"Instrument Sans"', 'system-ui', 'sans-serif'], mono: ['"JetBrains Mono"', 'ui-monospace'] },
+        colors: {
+          brand: { DEFAULT: '#0b6e5f', ink: '#14201d', soft: '#dcefe9', surface: '#ffffff', bg: '#f5f7f6', line: '#d9e1df', muted: '#5b6b67' },
+          stage: { new: '#5b6b67', contacted: '#2a64b8', meeting: '#8b4ab8', proposal: '#c4501b', won: '#1d7a3e', lost: '#b4232c' }
+        }
+      }
+    }
+  };
+</script>
+</head>
+<body class="bg-brand-bg text-brand-ink font-sans">
+
+<header class="sticky top-0 z-20 bg-white border-b border-brand-line">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
+    <div class="flex items-center gap-3 mr-auto">
+      <div class="w-8 h-8 rounded-md bg-brand grid place-items-center text-white font-bold text-sm">GNG</div>
+      <div>
+        <div class="font-bold text-lg leading-none">Grab-N-Go CRM</div>
+        <div id="connStatus" class="text-xs text-brand-muted">connecting…</div>
+      </div>
+    </div>
+    <button id="importBtn" class="px-3 py-2 border border-brand-line rounded-md text-sm font-semibold hover:bg-brand-bg">Import Apollo CSV</button>
+    <button id="newLeadBtn" class="px-3 py-2 rounded-md text-sm font-semibold bg-brand text-white hover:opacity-90">+ New lead</button>
+  </div>
+  <nav class="max-w-7xl mx-auto px-4 flex gap-1 overflow-x-auto" id="tabs"></nav>
+</header>
+
+<main id="main" class="max-w-7xl mx-auto px-4 py-6 pb-24"></main>
+
+<div id="drawer-root"></div>
+<div id="toast-root" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 items-center"></div>
+
+<template id="tpl-stat">
+  <div class="bg-white border border-brand-line rounded-lg p-4">
+    <div class="font-mono text-3xl font-semibold" data-stat-val></div>
+    <div class="text-sm text-brand-muted" data-stat-label></div>
+  </div>
+</template>
+
+<script src="assets/config.js"></script>
+<script src="assets/api.js"></script>
+<script src="assets/apollo.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
