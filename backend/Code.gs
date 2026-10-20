@@ -175,6 +175,8 @@ function _importBatch(incoming, mode, actor) {
 
     if (existingIdx && mode !== 'append') {
       if (mode === 'skip') { skipped++; return; }
+      // -1 marks a row appended earlier in this same batch (duplicate inside the CSV)
+      if (existingIdx < 0) { skipped++; return; }
       // merge: fill only empty fields
       const cur = _rowToObj(header, rows[existingIdx]);
       let changed = false;

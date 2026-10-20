@@ -87,7 +87,14 @@
     m.insertAdjacentHTML('beforeend', view());
     if (S.tab === 'pipeline') wireKanban();
     if (S.tab === 'dashboard') drawCharts();
-    if (S.drawer) renderDrawer();
+    // Background refreshes must not wipe a half-filled form or import; only the lead detail view shows live data.
+    if (S.drawer && S.drawer.type === 'lead') {
+      const note = document.getElementById('noteTxt');
+      const draft = note ? note.value : '';
+      renderDrawer();
+      const n = document.getElementById('noteTxt');
+      if (n && draft) n.value = draft;
+    }
   }
 
   function banner(msg, kind) {
@@ -381,7 +388,7 @@
     document.body.style.overflow = 'hidden';
     $('#drawer-root').innerHTML = `
       <div class="drawer-bg" data-close="1">
-        <div class="drawer" role="dialog" aria-modal="true" aria-label="${esc(title)}" onclick="event.stopPropagation()">
+        <div class="drawer" role="dialog" aria-modal="true" aria-label="${esc(title)}">
           <div class="drawer-h"><h2 class="flex-1 font-bold text-lg">${esc(title)}</h2>
             <button class="px-3 py-1.5 border border-brand-line rounded-md text-sm" data-close="1">Close</button></div>
           <div class="drawer-b">${body}</div>
@@ -539,7 +546,8 @@
     const ds = t.dataset;
 
     if (ds.tab) { S.tab = ds.tab; try { localStorage.setItem('gng.tab', S.tab); } catch(x){} closeDrawer(); render(); window.scrollTo(0,0); return; }
-    if (ds.close) { if (e.target === t || t.tagName === 'BUTTON' || t.classList.contains('drawer-bg')) closeDrawer(); return; }
+    // Clicks anywhere inside the drawer bubble up to .drawer-bg; only close on the backdrop itself or a close button.
+    if (ds.close) { if (e.target === t || t.tagName === 'BUTTON') closeDrawer(); return; }
     if (ds.open) { openDrawer({type:'lead', id: ds.open}); return; }
     if (ds.editlead) { openDrawer({type:'leadForm', id: ds.editlead}); return; }
     if (ds.dellead) {
